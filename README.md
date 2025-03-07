@@ -1,161 +1,73 @@
-from tkinter import messagebox
-from tkinter import *
-from tkinter import simpledialog
-import tkinter
-from tkinter import filedialog
-import matplotlib.pyplot as plt
-import numpy as np
-from tkinter.filedialog import askopenfilename
-import numpy as np 
-import pandas as pd 
-from sklearn import *
-from sklearn.model_selection import train_test_split 
-from sklearn.metrics import accuracy_score 
-from sklearn.metrics import classification_report 
-from sklearn.ensemble import RandomForestClassifier
-#from sklearn.tree import export_graphviz
-#from IPython import display
+Overview
 
+This project implements a credit card fraud detection system using machine learning techniques. The system utilizes the AdaBoost algorithm and Majority Voting mechanism to classify transactions as normal or fraudulent. The implementation is done using Python and Tkinter for GUI-based interaction.
 
-main = tkinter.Tk()
-main.title("Credit Card Fraud Detection") #designing main screen
-main.geometry("1300x1200")
+Features
 
-global filename
-global cls
-global X, Y, X_train, X_test, y_train, y_test
-global random_acc # all global variables names define in above lines
-global clean
-global attack
-global total
+1.Load and preprocess credit card transaction dataset
 
+2.Split dataset into training and testing sets
 
-def traintest(train):     #method to generate test and train data from dataset
-    X = train.values[:, 0:29] 
-    Y = train.values[:, 30]
-    print(X)
-    print(Y)
-    X_train, X_test, y_train, y_test = train_test_split( 
-    X, Y, test_size = 0.3, random_state = 0)
-    return X, Y, X_train, X_test, y_train, y_test
+3.Train a machine learning model using the Random Forest algorithm
 
-def generateModel(): #method to read dataset values which contains all five features data
-    global X, Y, X_train, X_test, y_train, y_test
-    train = pd.read_csv(filename)
-    X, Y, X_train, X_test, y_train, y_test = traintest(train)
-    text.insert(END,"Train & Test Model Generated\n\n")
-    text.insert(END,"Total Dataset Size : "+str(len(train))+"\n")
-    text.insert(END,"Split Training Size : "+str(len(X_train))+"\n")
-    text.insert(END,"Split Test Size : "+str(len(X_test))+"\n")
+4.Predict fraudulent transactions using trained models
 
+5.Display fraud detection results with a graphical interface
 
+6.Visualize normal and fraudulent transactions using bar graphs
 
-def upload(): #function to upload tweeter profile
-    global filename
-    filename = filedialog.askopenfilename(initialdir="dataset")
-    text.delete('1.0', END)
-    text.insert(END,filename+" loaded\n");
+Requirements
 
+1The following Python libraries are required to run the project:
 
+1.tkinter
 
-def prediction(X_test, cls):  #prediction done here
-    y_pred = cls.predict(X_test) 
-    for i in range(50):
-      print("X=%s, Predicted=%s" % (X_test[i], y_pred[i]))
-    return y_pred 
-	
-# Function to calculate accuracy 
-def cal_accuracy(y_test, y_pred, details): 
-    accuracy = accuracy_score(y_test,y_pred)*100
-    text.insert(END,details+"\n\n")
-    text.insert(END,"Accuracy : "+str(accuracy)+"\n\n")
-    return accuracy
+2.matplotlib
 
+3.numpy
 
-def runRandomForest():
-    headers = ["Time","V1","V2","V3","V4","V5","V6","V7","V8","V9","V10","V11","V12","V13","V14","V15","V16","V17","V18","V19","V20","V21","V22","V23","V24","V25","V26","V27","V28","Amount","Class"]
-    global random_acc
-    global cls
-    global X, Y, X_train, X_test, y_train, y_test
-    cls = RandomForestClassifier(n_estimators=50,max_depth=2,random_state=0,class_weight='balanced')
-    cls.fit(X_train, y_train) 
-    text.insert(END,"Prediction Results\n\n") 
-    prediction_data = prediction(X_test, cls) 
-    random_acc = cal_accuracy(y_test, prediction_data,'Random Forest Accuracy')
-    #str_tree = export_graphviz(cls, out_file=None, feature_names=headers,filled=True, special_characters=True, rotate=True, precision=0.6)
-    #display.display(str_tree)
-                
+4.pandas
 
+5.scikit-learn
 
-def predicts():
-    global clean
-    global attack
-    global total
-    clean = 0;
-    attack = 0;
-    text.delete('1.0', END)
-    filename = filedialog.askopenfilename(initialdir="dataset")
-    test = pd.read_csv(filename)
-    test = test.values[:, 0:29]
-    total = len(test)
-    text.insert(END,filename+" test file loaded\n");
-    y_pred = cls.predict(test) 
-    for i in range(len(test)):
-        if str(y_pred[i]) == '1.0':
-            attack = attack + 1
-            text.insert(END,"X=%s, Predicted = %s" % (test[i], 'Contains Fraud Transaction Signature So Transaction Stoped ')+"\n\n")
-        else:
-            clean = clean + 1
-            text.insert(END,"X=%s, Predicted = %s" % (test[i], 'Transaction Contains Cleaned Signatures')+"\n\n")
-     
+You can install the required libraries using:
 
-def graph():
-    height = [total,clean,attack]
-    bars = ('Total Transactions','Normal Transaction','Fraud Transaction')
-    y_pos = np.arange(len(bars))
-    plt.bar(y_pos, height)
-    plt.xticks(y_pos, bars)
-    plt.show()
+1.pip install numpy pandas matplotlib scikit-learn
 
-font = ('times', 16, 'bold')
-title = Label(main, text='Credit card fraud detection using adaboost and majority voting')
-title.config(bg='greenyellow', fg='dodger blue')  
-title.config(font=font)           
-title.config(height=3, width=120)       
-title.place(x=0,y=5)
+2.Installation & Execution
 
-font1 = ('times', 12, 'bold')
-text=Text(main,height=20,width=150)
-scroll=Scrollbar(text)
-text.configure(yscrollcommand=scroll.set)
-text.place(x=50,y=120)
-text.config(font=font1)
+3.Clone the repository or download the project files.
 
+4.Ensure all dependencies are installed.
 
-font1 = ('times', 14, 'bold')
-uploadButton = Button(main, text="Upload Credit Card Dataset", command=upload)
-uploadButton.place(x=50,y=550)
-uploadButton.config(font=font1)  
+5.Run the main.py file using:
 
-modelButton = Button(main, text="Generate Train & Test Model", command=generateModel)
-modelButton.place(x=350,y=550)
-modelButton.config(font=font1) 
+python main.py
 
-runrandomButton = Button(main, text="Run Adaboost And Majority Voting Algorithm", command=runRandomForest)
-runrandomButton.place(x=650,y=550)
-runrandomButton.config(font=font1) 
+The GUI will launch, allowing users to interact with the application.
 
-predictButton = Button(main, text="Detect Fraud From Test Data", command=predicts)
-predictButton.place(x=50,y=600)
-predictButton.config(font=font1) 
+Usage
 
-graphButton = Button(main, text="Clean & Fraud Transaction Detection Graph", command=graph)
-graphButton.place(x=350,y=600)
-graphButton.config(font=font1)
+1.Upload Dataset: Load the credit card transaction dataset (CSV format) into the application.
 
-exitButton = Button(main, text="Exit", command=exit)
-exitButton.place(x=770,y=600)
-exitButton.config(font=font1) 
+2.Generate Train & Test Model: The dataset is split into training and testing sets.
 
-main.config(bg='LightSkyBlue')
-main.mainloop()
+3.Run Algorithm: Executes the fraud detection model using AdaBoost and Majority Voting.
+
+4.Detect Fraud: Predicts fraudulent transactions from test data.
+
+5.Graphical Analysis: Displays a bar graph showing normal vs. fraudulent transactions.
+
+6.Exit: Closes the application.
+
+Dataset
+
+The dataset should be in CSV format and contain transaction details with class labels (0 for normal and 1 for fraudulent transactions). Ensure the dataset contains appropriate feature columns for model training.
+
+Output
+
+1.Classification of transactions as fraud or normal.
+
+2.Accuracy report of the model.
+
+3.Visual representation of transaction types.
